@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catch the Hearts</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(to top, #ff9a9e, #fecfef);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    #game {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      background: rgba(255, 255, 255, 0.3);
+      border: 3px solid #fff;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    #basket {
+      position: absolute;
+      bottom: 20px;
+      left: 170px;
+      width: 60px;
+      height: 30px;
+      background: #ff4d6d;
+      border-radius: 10px;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      animation: fall linear;
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 2px #ff4d6d;
+    }
+
+    @keyframes fall {
+      from { top: -30px; }
+      to { top: 600px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="basket"></div>
+    <div id="score">Score: 0</div>
+  </div>
+
+  <script>
+    const game = document.getElementById("game");
+    const basket = document.getElementById("basket");
+    const scoreEl = document.getElementById("score");
+    let score = 0;
+    let basketX = 170;
+
+    // Move basket with arrow keys
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" && basketX > 0) {
+        basketX -= 20;
+      } else if (e.key === "ArrowRight" && basketX < 340) {
+        basketX += 20;
+      }
+      basket.style.left = basketX + "px";
+    });
+
+    
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.textContent = "❤️";
+      heart.style.left = Math.random() * 370 + "px";
+      heart.style.top = "-30px";
+      heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+
+      game.appendChild(heart);
+
+      let fallInterval = setInterval(() => {
+        const heartRect = heart.getBoundingClientRect();
+        const basketRect = basket.getBoundingClientRect();
+
+        
+        if (
+          heartRect.bottom >= basketRect.top &&
+          heartRect.left >= basketRect.left &&
+          heartRect.right <= basketRect.right
+        ) {
+          score++;
+          scoreEl.textContent = "Score: " + score;
+          heart.remove();
+          clearInterval(fallInterval);
+        }
+
+        
+        if (parseInt(heart.style.top) > 600) {
+          heart.remove();
+          clearInterval(fallInterval);
+        }
+      }, 50);
+
+      setTimeout(() => heart.remove(), 5000);
+    }
+
+    setInterval(createHeart, 1000);
+  </script>
+</body>
+</html>
